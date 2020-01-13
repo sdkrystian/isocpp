@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="mpark/wg21" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2019-11-25" />
+  <title>Relaxing Restrictions on Arrays</title>
+  <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <style>
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f6f8fa; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span. { } /* Normal */
+code span.al { color: #ff0000; } /* Alert */
+code span.an { } /* Annotation */
+code span.at { } /* Attribute */
+code span.bn { color: #9f6807; } /* BaseN */
+code span.bu { color: #9f6807; } /* BuiltIn */
+code span.cf { color: #00607c; } /* ControlFlow */
+code span.ch { color: #9f6807; } /* Char */
+code span.cn { } /* Constant */
+code span.co { color: #008000; font-style: italic; } /* Comment */
+code span.cv { color: #008000; font-style: italic; } /* CommentVar */
+code span.do { color: #008000; } /* Documentation */
+code span.dt { color: #00607c; } /* DataType */
+code span.dv { color: #9f6807; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #9f6807; } /* Float */
+code span.fu { } /* Function */
+code span.im { } /* Import */
+code span.in { color: #008000; } /* Information */
+code span.kw { color: #00607c; } /* Keyword */
+code span.op { color: #af1915; } /* Operator */
+code span.ot { } /* Other */
+code span.pp { color: #6f4e37; } /* Preprocessor */
+code span.re { } /* RegionMarker */
+code span.sc { color: #9f6807; } /* SpecialChar */
+code span.ss { color: #9f6807; } /* SpecialString */
+code span.st { color: #9f6807; } /* String */
+code span.va { } /* Variable */
+code span.vs { color: #9f6807; } /* VerbatimString */
+code span.wa { color: #008000; font-weight: bold; } /* Warning */
+code.diff {color: #898887}
+code.diff span.va {color: #006e28}
+code.diff span.st {color: #bf0303}
+  </style>
+  <style type="text/css">
+body {
+margin: 5em;
+font-family: serif;
+
+hyphens: auto;
+line-height: 1.35;
+}
+div.wrapper {
+max-width: 60em;
+margin: auto;
+}
+ul {
+list-style-type: none;
+padding-left: 2em;
+margin-top: -0.2em;
+margin-bottom: -0.2em;
+}
+a {
+text-decoration: none;
+color: #4183C4;
+}
+a.hidden_link {
+text-decoration: none;
+color: inherit;
+}
+li {
+margin-top: 0.6em;
+margin-bottom: 0.6em;
+}
+h1, h2, h3, h4 {
+position: relative;
+line-height: 1;
+}
+a.self-link {
+position: absolute;
+top: 0;
+left: calc(-1 * (3.5rem - 26px));
+width: calc(3.5rem - 26px);
+height: 2em;
+text-align: center;
+border: none;
+transition: opacity .2s;
+opacity: .5;
+font-family: sans-serif;
+font-weight: normal;
+font-size: 83%;
+}
+a.self-link:hover { opacity: 1; }
+a.self-link::before { content: "§"; }
+ul > li:before {
+content: "\2014";
+position: absolute;
+margin-left: -1.5em;
+}
+:target { background-color: #C9FBC9; }
+:target .codeblock { background-color: #C9FBC9; }
+:target ul { background-color: #C9FBC9; }
+.abbr_ref { float: right; }
+.folded_abbr_ref { float: right; }
+:target .folded_abbr_ref { display: none; }
+:target .unfolded_abbr_ref { float: right; display: inherit; }
+.unfolded_abbr_ref { display: none; }
+.secnum { display: inline-block; min-width: 35pt; }
+.header-section-number { display: inline-block; min-width: 35pt; }
+.annexnum { display: block; }
+div.sourceLinkParent {
+float: right;
+}
+a.sourceLink {
+position: absolute;
+opacity: 0;
+margin-left: 10pt;
+}
+a.sourceLink:hover {
+opacity: 1;
+}
+a.itemDeclLink {
+position: absolute;
+font-size: 75%;
+text-align: right;
+width: 5em;
+opacity: 0;
+}
+a.itemDeclLink:hover { opacity: 1; }
+span.marginalizedparent {
+position: relative;
+left: -5em;
+}
+li span.marginalizedparent { left: -7em; }
+li ul > li span.marginalizedparent { left: -9em; }
+li ul > li ul > li span.marginalizedparent { left: -11em; }
+li ul > li ul > li ul > li span.marginalizedparent { left: -13em; }
+div.footnoteNumberParent {
+position: relative;
+left: -4.7em;
+}
+a.marginalized {
+position: absolute;
+font-size: 75%;
+text-align: right;
+width: 5em;
+}
+a.enumerated_item_num {
+position: relative;
+left: -3.5em;
+display: inline-block;
+margin-right: -3em;
+text-align: right;
+width: 3em;
+}
+div.para { margin-bottom: 0.6em; margin-top: 0.6em; text-align: justify; }
+div.section { text-align: justify; }
+div.sentence { display: inline; }
+span.indexparent {
+display: inline;
+position: relative;
+float: right;
+right: -1em;
+}
+a.index {
+position: absolute;
+display: none;
+}
+a.index:before { content: "⟵"; }
+
+a.index:target {
+display: inline;
+}
+.indexitems {
+margin-left: 2em;
+text-indent: -2em;
+}
+div.itemdescr {
+margin-left: 3em;
+}
+.bnf {
+font-family: serif;
+margin-left: 40pt;
+margin-top: 0.5em;
+margin-bottom: 0.5em;
+}
+.ncbnf {
+font-family: serif;
+margin-top: 0.5em;
+margin-bottom: 0.5em;
+margin-left: 40pt;
+}
+.ncsimplebnf {
+font-family: serif;
+font-style: italic;
+margin-top: 0.5em;
+margin-bottom: 0.5em;
+margin-left: 40pt;
+background: inherit; 
+}
+span.textnormal {
+font-style: normal;
+font-family: serif;
+white-space: normal;
+display: inline-block;
+}
+span.rlap {
+display: inline-block;
+width: 0px;
+}
+span.descr { font-style: normal; font-family: serif; }
+span.grammarterm { font-style: italic; }
+span.term { font-style: italic; }
+span.terminal { font-family: monospace; font-style: normal; }
+span.nonterminal { font-style: italic; }
+span.tcode { font-family: monospace; font-style: normal; }
+span.textbf { font-weight: bold; }
+span.textsc { font-variant: small-caps; }
+a.nontermdef { font-style: italic; font-family: serif; }
+span.emph { font-style: italic; }
+span.techterm { font-style: italic; }
+span.mathit { font-style: italic; }
+span.mathsf { font-family: sans-serif; }
+span.mathrm { font-family: serif; font-style: normal; }
+span.textrm { font-family: serif; }
+span.textsl { font-style: italic; }
+span.mathtt { font-family: monospace; font-style: normal; }
+span.mbox { font-family: serif; font-style: normal; }
+span.ungap { display: inline-block; width: 2pt; }
+span.textit { font-style: italic; }
+span.texttt { font-family: monospace; }
+span.tcode_in_codeblock { font-family: monospace; font-style: normal; }
+span.phantom { color: white; }
+
+span.math { font-style: normal; }
+span.mathblock {
+display: block;
+margin-left: auto;
+margin-right: auto;
+margin-top: 1.2em;
+margin-bottom: 1.2em;
+text-align: center;
+}
+span.mathalpha {
+font-style: italic;
+}
+span.synopsis {
+font-weight: bold;
+margin-top: 0.5em;
+display: block;
+}
+span.definition {
+font-weight: bold;
+display: block;
+}
+.codeblock {
+margin-left: 1.2em;
+line-height: 127%;
+}
+.outputblock {
+margin-left: 1.2em;
+line-height: 127%;
+}
+div.itemdecl {
+margin-top: 2ex;
+}
+code.itemdeclcode {
+white-space: pre;
+display: block;
+}
+span.textsuperscript {
+vertical-align: super;
+font-size: smaller;
+line-height: 0;
+}
+.footnotenum { vertical-align: super; font-size: smaller; line-height: 0; }
+.footnote {
+font-size: small;
+margin-left: 2em;
+margin-right: 2em;
+margin-top: 0.6em;
+margin-bottom: 0.6em;
+}
+div.minipage {
+display: inline-block;
+margin-right: 3em;
+}
+div.numberedTable {
+text-align: center;
+margin: 2em;
+}
+div.figure {
+text-align: center;
+margin: 2em;
+}
+table {
+border: 1px solid black;
+border-collapse: collapse;
+margin-left: auto;
+margin-right: auto;
+margin-top: 0.8em;
+text-align: left;
+hyphens: none; 
+}
+td, th {
+padding-left: 1em;
+padding-right: 1em;
+vertical-align: top;
+}
+td.empty {
+padding: 0px;
+padding-left: 1px;
+}
+td.left {
+text-align: left;
+}
+td.right {
+text-align: right;
+}
+td.center {
+text-align: center;
+}
+td.justify {
+text-align: justify;
+}
+td.border {
+border-left: 1px solid black;
+}
+tr.rowsep, td.cline {
+border-top: 1px solid black;
+}
+tr.even, tr.odd {
+border-bottom: 1px solid black;
+}
+tr.capsep {
+border-top: 3px solid black;
+border-top-style: double;
+}
+tr.header {
+border-bottom: 3px solid black;
+border-bottom-style: double;
+}
+th {
+border-bottom: 1px solid black;
+}
+span.centry {
+font-weight: bold;
+}
+div.table {
+display: block;
+margin-left: auto;
+margin-right: auto;
+text-align: center;
+width: 90%;
+}
+span.indented {
+display: block;
+margin-left: 2em;
+margin-bottom: 1em;
+margin-top: 1em;
+}
+ol.enumeratea { list-style-type: none; background: inherit; }
+ol.enumerate { list-style-type: none; background: inherit; }
+
+code.sourceCode > span { display: inline; }
+
+div#refs p { padding-left: 32px; text-indent: -32px; }
+</style>
+  <link href="data:image/vnd.microsoft.icon;base64,AAABAAIAEBAAAAEAIABoBAAAJgAAACAgAAABACAAqBAAAI4EAAAoAAAAEAAAACAAAAABACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////AIJEAACCRAAAgkQAAIJEAACCRAAAgkQAVoJEAN6CRADegkQAWIJEAACCRAAAgkQAAIJEAACCRAAA////AP///wCCRAAAgkQAAIJEAACCRAAsgkQAvoJEAP+CRAD/gkQA/4JEAP+CRADAgkQALoJEAACCRAAAgkQAAP///wD///8AgkQAAIJEABSCRACSgkQA/IJEAP99PQD/dzMA/3czAP99PQD/gkQA/4JEAPyCRACUgkQAFIJEAAD///8A////AHw+AFiBQwDqgkQA/4BBAP9/PxP/uZd6/9rJtf/bybX/upd7/39AFP+AQQD/gkQA/4FDAOqAQgBc////AP///wDKklv4jlEa/3o7AP+PWC//8+3o///////////////////////z7un/kFox/35AAP+GRwD/mVYA+v///wD///8A0Zpk+NmibP+0d0T/8evj///////+/fv/1sKz/9bCs//9/fr//////+/m2/+NRwL/nloA/5xYAPj///8A////ANKaZPjRmGH/5cKh////////////k149/3UwAP91MQD/lmQ//86rhv+USg3/m1YA/5hSAP+bVgD4////AP///wDSmmT4zpJY/+/bx///////8+TV/8mLT/+TVx//gkIA/5lVAP+VTAD/x6B//7aEVv/JpH7/s39J+P///wD///8A0ppk+M6SWP/u2sf///////Pj1f/Nj1T/2KFs/8mOUv+eWhD/lEsA/8aee/+0glT/x6F7/7J8Rvj///8A////ANKaZPjRmGH/48Cf///////+/v7/2qt//82PVP/OkFX/37KJ/86siv+USg7/mVQA/5hRAP+bVgD4////AP///wDSmmT40ppk/9CVXP/69O////////7+/v/x4M//8d/P//7+/f//////9u7n/6tnJf+XUgD/nFgA+P///wD///8A0ppk+NKaZP/RmWL/1qNy//r07///////////////////////+vXw/9akdP/Wnmn/y5FY/6JfFvj///8A////ANKaZFTSmmTo0ppk/9GYYv/Ql1//5cWm//Hg0P/x4ND/5cWm/9GXYP/RmGH/0ppk/9KaZOjVnmpY////AP///wDSmmQA0ppkEtKaZI7SmmT60ppk/9CWX//OkVb/zpFW/9CWX//SmmT/0ppk/NKaZJDSmmQS0ppkAP///wD///8A0ppkANKaZADSmmQA0ppkKtKaZLrSmmT/0ppk/9KaZP/SmmT/0ppkvNKaZCrSmmQA0ppkANKaZAD///8A////ANKaZADSmmQA0ppkANKaZADSmmQA0ppkUtKaZNzSmmTc0ppkVNKaZADSmmQA0ppkANKaZADSmmQA////AP5/AAD4HwAA4AcAAMADAACAAQAAgAEAAIABAACAAQAAgAEAAIABAACAAQAAgAEAAMADAADgBwAA+B8AAP5/AAAoAAAAIAAAAEAAAAABACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////AP///wCCRAAAgkQAAIJEAACCRAAAgkQAAIJEAACCRAAAgkQAAIJEAACCRAAAgkQAAIJEAAyCRACMgkQA6oJEAOqCRACQgkQAEIJEAACCRAAAgkQAAIJEAACCRAAAgkQAAIJEAACCRAAAgkQAAIJEAACCRAAA////AP///wD///8A////AIJEAACCRAAAgkQAAIJEAACCRAAAgkQAAIJEAACCRAAAgkQAAIJEAACCRABigkQA5oJEAP+CRAD/gkQA/4JEAP+CRADqgkQAZoJEAACCRAAAgkQAAIJEAACCRAAAgkQAAIJEAACCRAAAgkQAAIJEAAD///8A////AP///wD///8AgkQAAIJEAACCRAAAgkQAAIJEAACCRAAAgkQAAIJEAACCRAA4gkQAwoJEAP+CRAD/gkQA/4JEAP+CRAD/gkQA/4JEAP+CRAD/gkQAxIJEADyCRAAAgkQAAIJEAACCRAAAgkQAAIJEAACCRAAAgkQAAP///wD///8A////AP///wCCRAAAgkQAAIJEAACCRAAAgkQAAIJEAACCRAAWgkQAmIJEAP+CRAD/gkQA/4JEAP+CRAD/gkQA/4JEAP+CRAD/gkQA/4JEAP+CRAD/gkQA/4JEAJyCRAAYgkQAAIJEAACCRAAAgkQAAIJEAACCRAAA////AP///wD///8A////AIJEAACCRAAAgkQAAIJEAACCRAAAgkQAdIJEAPCCRAD/gkQA/4JEAP+CRAD/gkQA/4JEAP+CRAD/gkQA/4JEAP+CRAD/gkQA/4JEAP+CRAD/gkQA/4JEAPSCRAB4gkQAAIJEAACCRAAAgkQAAIJEAAD///8A////AP///wD///8AgkQAAIJEAACCRAAAgkQASoJEANKCRAD/gkQA/4JEAP+CRAD/g0YA/39AAP9zLgD/bSQA/2shAP9rIQD/bSQA/3MuAP9/PwD/g0YA/4JEAP+CRAD/gkQA/4JEAP+CRADUgkQAToJEAACCRAAAgkQAAP///wD///8A////AP///wB+PwAAgkUAIoJEAKiCRAD/gkQA/4JEAP+CRAD/hEcA/4BBAP9sIwD/dTAA/5RfKv+viF7/vp56/76ee/+wiF7/lWAr/3YxAP9sIwD/f0AA/4RHAP+CRAD/gkQA/4JEAP+CRAD/gkQArIJEACaBQwAA////AP///wD///8A////AIBCAEBzNAD6f0EA/4NFAP+CRAD/gkQA/4VIAP92MwD/bSUA/6N1Tv/ezsL/////////////////////////////////38/D/6V3Uv9uJgD/dTEA/4VJAP+CRAD/gkQA/4JEAP+BQwD/fUAA/4FDAEj///8A////AP///wD///8AzJRd5qBlKf91NgD/dDUA/4JEAP+FSQD/cy4A/3YyAP/PuKP//////////////////////////////////////////////////////9K7qP94NQD/ciwA/4VJAP+CRAD/fkEA/35BAP+LSwD/mlYA6v///wD///8A////AP///wDdpnL/4qx3/8KJUv+PUhf/cTMA/3AsAP90LgD/4dK+/////////////////////////////////////////////////////////////////+TYxf91MAD/dTIA/31CAP+GRwD/llQA/6FcAP+gWwD8////AP///wD///8A////ANGZY/LSm2X/4ap3/92mcP+wdT3/byQA/8mwj////////////////////////////////////////////////////////////////////////////+LYxv9zLgP/jUoA/59bAP+hXAD/nFgA/5xYAPL///8A////AP///wD///8A0ppk8tKaZP/RmWL/1p9q/9ubXv/XqXj////////////////////////////7+fD/vZyG/6BxS/+gcUr/vJuE//r37f//////////////////////3MOr/5dQBf+dVQD/nVkA/5xYAP+cWAD/nFgA8v///wD///8A////AP///wDSmmTy0ppk/9KaZP/SmWP/yohJ//jo2P//////////////////////4NTG/4JDFf9lGAD/bSQA/20kAP9kGAD/fz8S/+Xb0f//////5NG9/6txN/+LOgD/m1QA/51aAP+cWAD/m1cA/5xYAP+cWADy////AP///wD///8A////ANKaZPLSmmT/0ppk/8+TWf/Unmv//v37//////////////////////+TWRr/VwsA/35AAP+ERgD/g0UA/4JGAP9lHgD/kFga/8KXX/+TRwD/jT4A/49CAP+VTQD/n10A/5xYAP+OQQD/lk4A/55cAPL///8A////AP///wD///8A0ppk8tKaZP/SmmT/y4tO/92yiP//////////////////////8NnE/8eCQP+rcTT/ez0A/3IyAP98PgD/gEMA/5FSAP+USwD/jj8A/5lUAP+JNwD/yqV2/694Mf+HNQD/jkAA/82rf/+laBj/jT4A8v///wD///8A////AP///wDSmmTy0ppk/9KaZP/LiUr/4byY///////////////////////gupX/0I5P/+Wuev/Lklz/l1sj/308AP+QSwD/ol0A/59aAP+aVQD/k0oA/8yoh///////+fXv/6pwO//Lp3v///////Pr4f+oay7y////AP///wD///8A////ANKaZPLSmmT/0ppk/8uJSv/hvJj//////////////////////+G7l//Jhkb/0ppk/96nc//fqXX/x4xO/6dkFP+QSQD/llEA/5xXAP+USgD/yaOA///////38uv/qG05/8ijdv//////8efb/6ZpLPL///8A////AP///wD///8A0ppk8tKaZP/SmmT/zIxO/9yxh///////////////////////7dbA/8iEQf/Sm2X/0Zlj/9ScZv/eqHf/2KJv/7yAQf+XTgD/iToA/5lSAP+JNgD/yKFv/611LP+HNQD/jT8A/8qmeP+kZRT/jT4A8v///wD///8A////AP///wDSmmTy0ppk/9KaZP/Pk1n/1J5q//78+//////////////////+/fv/1aFv/8iEQv/Tm2b/0ppl/9GZY//Wn2z/1pZc/9eldf/Bl2b/kUcA/4w9AP+OQAD/lUwA/59eAP+cWQD/jT8A/5ZOAP+eXADy////AP///wD///8A////ANKaZPLSmmT/0ppk/9KZY//KiEn/8d/P///////////////////////47+f/05tm/8iCP//KiEj/yohJ/8eCP//RmGH//vfy///////n1sP/rXQ7/4k4AP+TTAD/nVoA/5xYAP+cVwD/nFgA/5xYAPL///8A////AP///wD///8A0ppk8tKaZP/SmmT/0ptl/8uLTf/aq37////////////////////////////+/fz/6c2y/961jv/etY7/6Myx//78+v//////////////////////3MWv/5xXD/+ORAD/mFQA/51ZAP+cWAD/nFgA8v///wD///8A////AP///wDSmmTy0ppk/9KaZP/SmmT/0ppk/8mFRP/s1b//////////////////////////////////////////////////////////////////////////////+PD/0JFU/7NzMv+WUQD/kUsA/5tXAP+dWQDy////AP///wD///8A////ANKaZP/SmmT/0ppk/9KaZP/Sm2X/z5NZ/8yMT//z5NX/////////////////////////////////////////////////////////////////9Ofa/8yNUP/UmGH/36p5/8yTWv+qaSD/kksA/5ROAPz///8A////AP///wD///8A0ppk5NKaZP/SmmT/0ppk/9KaZP/TnGf/zY9T/82OUv/t1sD//////////////////////////////////////////////////////+7Yw//OkFX/zI5R/9OcZ//SmmP/26V0/9ymdf/BhUf/ol8R6P///wD///8A////AP///wDSmmQ80ppk9tKaZP/SmmT/0ppk/9KaZP/TnGj/zpFW/8qJSv/dson/8uHS//////////////////////////////////Lj0//etIv/y4lL/86QVf/TnGj/0ppk/9KaZP/RmWP/05xn/9ymdfjUnWdC////AP///wD///8A////ANKaZADSmmQc0ppkotKaZP/SmmT/0ppk/9KaZP/Tm2b/0Zli/8qJSf/NjlH/16Z3/+G8mP/myKr/5siq/+G8mP/Xp3f/zY5S/8qISf/RmGH/05tm/9KaZP/SmmT/0ppk/9KaZP/SmmSm0pljINWdaQD///8A////AP///wD///8A0ppkANKaZADSmmQA0ppkQtKaZMrSmmT/0ppk/9KaZP/SmmT/0ptl/9GYYf/Nj1P/y4lL/8qISP/KiEj/y4lK/82PU//RmGH/0ptl/9KaZP/SmmT/0ppk/9KaZP/SmmTO0ppkRtKaZADSmmQA0ppkAP///wD///8A////AP///wDSmmQA0ppkANKaZADSmmQA0ppkANKaZGzSmmTu0ppk/9KaZP/SmmT/0ppk/9KaZP/SmmT/0ppk/9KaZP/SmmT/0ppk/9KaZP/SmmT/0ppk/9KaZP/SmmTw0ppkcNKaZADSmmQA0ppkANKaZADSmmQA////AP///wD///8A////ANKaZADSmmQA0ppkANKaZADSmmQA0ppkANKaZBLSmmSQ0ppk/9KaZP/SmmT/0ppk/9KaZP/SmmT/0ppk/9KaZP/SmmT/0ppk/9KaZP/SmmT/0ppklNKaZBTSmmQA0ppkANKaZADSmmQA0ppkANKaZAD///8A////AP///wD///8A0ppkANKaZADSmmQA0ppkANKaZADSmmQA0ppkANKaZADSmmQy0ppkutKaZP/SmmT/0ppk/9KaZP/SmmT/0ppk/9KaZP/SmmT/0ppkvtKaZDbSmmQA0ppkANKaZADSmmQA0ppkANKaZADSmmQA0ppkAP///wD///8A////AP///wDSmmQA0ppkANKaZADSmmQA0ppkANKaZADSmmQA0ppkANKaZADSmmQA0ppkXNKaZODSmmT/0ppk/9KaZP/SmmT/0ppk5NKaZGDSmmQA0ppkANKaZADSmmQA0ppkANKaZADSmmQA0ppkANKaZADSmmQA////AP///wD///8A////ANKaZADSmmQA0ppkANKaZADSmmQA0ppkANKaZADSmmQA0ppkANKaZADSmmQA0ppkBtKaZIbSmmTo0ppk6tKaZIrSmmQK0ppkANKaZADSmmQA0ppkANKaZADSmmQA0ppkANKaZADSmmQA0ppkANKaZAD///8A////AP/8P///+B///+AH//+AAf//AAD//AAAP/AAAA/gAAAHwAAAA8AAAAPAAAADwAAAA8AAAAPAAAADwAAAA8AAAAPAAAADwAAAA8AAAAPAAAADwAAAA8AAAAPAAAADwAAAA+AAAAfwAAAP/AAAP/8AAP//gAH//+AH///4H////D//" rel="icon" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+  
+</head>
+<body>
+<div class="wrapper">
+<header id="title-block-header">
+<h1 class="title" style="text-align:center">Relaxing Restrictions on Arrays</h1>
+
+<table style="border:none;float:right">
+  <tr>
+    <td>Document #: </td>
+    <td>P1997R0</td>
+  </tr>
+  <tr>
+    <td>Date: </td>
+    <td>2019-11-25</td>
+  </tr>
+  <tr>
+    <td style="vertical-align:top">Project: </td>
+    <td>Programming Language C++<br>
+      Evolution Working Group<br>
+    </td>
+  </tr>
+  <tr>
+    <td style="vertical-align:top">Reply-to: </td>
+    <td>
+      Krystian Stasiowski<br>&lt;<a href="mailto:sdkrystian@gmail.com" class="email">sdkrystian@gmail.com</a>&gt;<br>
+      Theodoric Stier<br>&lt;<a href="mailto:kerdek7@gmail.com" class="email">kerdek7@gmail.com</a>&gt;<br>
+    </td>
+  </tr>
+</table>
+
+</header>
+<div style="clear:both">
+<div id="TOC" role="doc-toc">
+<h1 id="toctitle">Contents</h1>
+
+</div>
+
+<h1 id="abstract"><span class="header-section-number">1</span> Abstract<a href="#abstract" class="self-link"></a></h1>
+<p>We propose endowing arrays with initialization and assignment from other arrays, placeholder semantics, pseudo-destructors, and the ability to serve as return types, in order to bring consistency to the semantics of aggregates.</p>
+<h1 id="motivation"><span class="header-section-number">2</span> Motivation<a href="#motivation" class="self-link"></a></h1>
+<p>Aggregates were created with the purpose of providing semantics and behavior which are reasonable to expect from such types, but, while aggregate classes enjoy most of the provisions, arrays appear to possess some artificial and confusing restrictions. It is currently possible to enjoy the semantics and behaviors of aggregate classes while using an array by wrapping it or using <code>std::array</code>. Wrapping data in a type with a descriptive name is often good practice, but some arrays are self-explanatory, and such wrapping only presents an unnecessary cognitive burden in such cases.</p>
+<table>
+<tbody>
+<tr class="odd">
+<td><div class="sourceCode" id="cb1"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb1-1"><a href="#cb1-1"></a><span class="dt">int</span> samples_x<span class="op">[</span><span class="dv">5</span><span class="op">]</span>;</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="dt">int</span> samples_y<span class="op">[</span><span class="dv">5</span><span class="op">]</span> <span class="op">=</span> samples_x;</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="co">// ill-formed, but self-explanatory</span></span></code></pre></div></td>
+<td><div class="sourceCode" id="cb2"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">struct</span> samples <span class="op">{</span> <span class="dt">int</span> s<span class="op">[</span><span class="dv">5</span><span class="op">]</span>; <span class="op">}</span>;</span>
+<span id="cb2-2"><a href="#cb2-2"></a>samples x;</span>
+<span id="cb2-3"><a href="#cb2-3"></a>samples y <span class="op">=</span> x; <span class="co">// OK, but why?</span></span></code></pre></div></td>
+</tr>
+</tbody>
+</table>
+<p>Beginners may not understand why arrays are element-wise copy/move constructible/assignable when they are data members but not when they are named by local variables. To an expert, this limitation may appear artificial, perhaps even backwards. Arrays could be readily understood as like aggregate classes except having elements which are referred to by subscripts instead of names and no member functions, base classes, or operator overloads.</p>
+<p>Array return types are legible in trailing return type syntax.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">auto</span> make_coefs<span class="op">()</span> <span class="op">-&gt;</span> <span class="dt">int</span><span class="op">[</span><span class="dv">3</span><span class="op">]</span></span></code></pre></div>
+<p>An aggregate class whose first element is an array with bound <em>n</em> must have <em>n</em> initializers before any later element may be initialized.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">struct</span> lp_3_point</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="op">{</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a>    <span class="dt">int</span> coords<span class="op">[</span><span class="dv">3</span><span class="op">]</span>;</span>
+<span id="cb4-4"><a href="#cb4-4"></a>    <span class="dt">float</span> power;</span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="op">}</span>;</span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="kw">auto</span> make_euclidean_3_point<span class="op">(</span><span class="dt">int</span> <span class="op">(&amp;</span>c<span class="op">)[</span><span class="dv">3</span><span class="op">])</span> <span class="op">-&gt;</span> lp_3_point</span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="op">{</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a>    <span class="co">// must write four elements in order to initialize power</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a>    <span class="cf">return</span> <span class="op">{</span> c<span class="op">[</span><span class="dv">0</span><span class="op">]</span>, c<span class="op">[</span><span class="dv">1</span><span class="op">]</span>, c<span class="op">[</span><span class="dv">2</span><span class="op">]</span>, <span class="fl">2.0</span><span class="bu">f</span> <span class="op">}</span>;</span>
+<span id="cb4-11"><a href="#cb4-11"></a>    <span class="co">// would make sense to initialize an array with an array</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a>    <span class="cf">return</span> <span class="op">{</span> c, <span class="fl">2.0</span><span class="bu">f</span> <span class="op">}</span>;</span>
+<span id="cb4-13"><a href="#cb4-13"></a><span class="op">}</span></span></code></pre></div>
+<p>If the user provides an assignment operator to a class having an array data member, they must explicitly iterate over the elements to be assigned, or wrap the array as above.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">class</span> widget</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="op">{</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a>    gadget g<span class="op">[</span><span class="dv">4</span><span class="op">]</span>; <span class="co">// user-provided assignment is now painful</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="op">}</span>;</span></code></pre></div>
+<p>Allowing the initialization and assignment of arrays makes the language more like other high level languages where array assignment is permitted. Addressing these caveats makes the language easier to learn and teach. In addition to this, allowing arrays to be initialized from other arrays, assigned, returned, and destructed makes writing generic code much easier, as it removes the need for special cases when a parameter is of array type. This opens up several use cases, such as the following use for <code>std::fill</code>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">template</span><span class="op">&lt;</span><span class="kw">class</span> ForwardIt, <span class="kw">class</span> T <span class="op">=</span> <span class="kw">typename</span> iterator_traits<span class="op">&lt;</span>ForwardIt<span class="op">&gt;::</span>value_type<span class="op">&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">constexpr</span> <span class="dt">void</span> fill<span class="op">(</span>ForwardIt first, ForwardIt last, <span class="kw">const</span> T<span class="op">&amp;</span> value<span class="op">)</span>;</span></code></pre></div>
+<p>With this addition of a default argument to facilitate the use of an initializer list as an argument for <code>value</code>, it makes it possible to use <code>std::fill</code> to assign arrays within a multidimensional array with ease.</p>
+<h1 id="proposal"><span class="header-section-number">3</span> Proposal<a href="#proposal" class="self-link"></a></h1>
+<p>We propose to define initialization and assignment of an array type by a similar array type, to define array return types, to define array pseudodestructors, and to define reasonable type deduction for array placeholder types.</p>
+<h2 id="initialization"><span class="header-section-number">3.1</span> Initialization<a href="#initialization" class="self-link"></a></h2>
+<p>Expressions of array type may be used as initializers for array objects having the same element type. The elements of the object are initialized using the corresponding elements of the value. Array bounds are deduced when the declaration type is an unbounded array.</p>
+<table>
+<thead>
+<tr class="header">
+<th><div style="text-align:center">
+<strong>C++20</strong>
+</div></th>
+<th><div style="text-align:center">
+<strong>Proposed</strong>
+</div></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><div class="sourceCode" id="cb7"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb7-1"><a href="#cb7-1"></a>std<span class="op">::</span>string x<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span> <span class="st">&quot;foo&quot;</span>, <span class="st">&quot;bar&quot;</span> <span class="op">}</span>;</span>
+<span id="cb7-2"><a href="#cb7-2"></a>std<span class="op">::</span>string y0<span class="op">[]</span> <span class="op">=</span> x; <span class="co">// ill-formed</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>std<span class="op">::</span>string y1<span class="op">[</span><span class="dv">3</span><span class="op">]</span> <span class="op">=</span> x; <span class="co">// ill-formed</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a>std<span class="op">::</span>string y2<span class="op">[]</span> <span class="op">=</span> std<span class="op">::</span>move<span class="op">(</span>x<span class="op">)</span>; <span class="co">// ill-formed</span></span></code></pre></div></td>
+<td><div class="sourceCode" id="cb8"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb8-1"><a href="#cb8-1"></a>std<span class="op">::</span>string x<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span> <span class="st">&quot;foo&quot;</span>, <span class="st">&quot;bar&quot;</span> <span class="op">}</span>;</span>
+<span id="cb8-2"><a href="#cb8-2"></a>std<span class="op">::</span>string y0<span class="op">[]</span> <span class="op">=</span> x; <span class="co">// the elements of y0 are &quot;foo&quot;, &quot;bar&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a>std<span class="op">::</span>string y1<span class="op">[</span><span class="dv">3</span><span class="op">]</span> <span class="op">=</span> x; <span class="co">// ill-formed; bounds do not match</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a>std<span class="op">::</span>string y2<span class="op">[]</span> <span class="op">=</span> std<span class="op">::</span>move<span class="op">(</span>x<span class="op">)</span>; <span class="co">// elements of x are moved-from</span></span></code></pre></div></td>
+</tr>
+</tbody>
+</table>
+<h2 id="assignment"><span class="header-section-number">3.2</span> Assignment<a href="#assignment" class="self-link"></a></h2>
+<p>Expressions of array type may be used as the right hand side of built-in assignment for array objects having the same element type. The elements of the object are assigned using the corresponding elements of the value.</p>
+<table>
+<thead>
+<tr class="header">
+<th><div style="text-align:center">
+<strong>C++20</strong>
+</div></th>
+<th><div style="text-align:center">
+<strong>Proposed</strong>
+</div></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><div class="sourceCode" id="cb9"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">int</span> x<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span> <span class="dv">1</span>, <span class="dv">2</span> <span class="op">}</span>;</span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="dt">int</span> y<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span> <span class="dv">3</span>, <span class="dv">4</span> <span class="op">}</span>;</span>
+<span id="cb9-3"><a href="#cb9-3"></a>x <span class="op">=</span> y; <span class="co">// ill-formed</span></span></code></pre></div></td>
+<td><div class="sourceCode" id="cb10"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">int</span> x<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span> <span class="dv">1</span>, <span class="dv">2</span> <span class="op">}</span>;</span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="dt">int</span> y<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span> <span class="dv">3</span>, <span class="dv">4</span> <span class="op">}</span>;</span>
+<span id="cb10-3"><a href="#cb10-3"></a>x <span class="op">=</span> y; <span class="co">// the elements of x are 3, 4</span></span></code></pre></div></td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="array-return-types"><span class="header-section-number">3.3</span> Array return types<a href="#array-return-types" class="self-link"></a></h2>
+<p>Array return types are permitted. Copy elision is defined for arrays.</p>
+<table>
+<thead>
+<tr class="header">
+<th><div style="text-align:center">
+<strong>C++20</strong>
+</div></th>
+<th><div style="text-align:center">
+<strong>Proposed</strong>
+</div></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><div class="sourceCode" id="cb11"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">auto</span> f<span class="op">()</span> <span class="op">-&gt;</span> std<span class="op">::</span>string<span class="op">[</span><span class="dv">2</span><span class="op">]</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="op">{</span></span>
+<span id="cb11-3"><a href="#cb11-3"></a>    <span class="cf">return</span> <span class="op">{</span> <span class="st">&quot;foo&quot;</span>, <span class="st">&quot;bar&quot;</span> <span class="op">}</span>;</span>
+<span id="cb11-4"><a href="#cb11-4"></a><span class="op">}</span></span>
+<span id="cb11-5"><a href="#cb11-5"></a>std<span class="op">::</span>string x<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">=</span> f<span class="op">()</span>; <span class="co">// ill-formed</span></span></code></pre></div></td>
+<td><div class="sourceCode" id="cb12"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">auto</span> f<span class="op">()</span> <span class="op">-&gt;</span> std<span class="op">::</span>string<span class="op">[</span><span class="dv">2</span><span class="op">]</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="op">{</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a>    <span class="cf">return</span> <span class="op">{</span> <span class="st">&quot;foo&quot;</span>, <span class="st">&quot;bar&quot;</span> <span class="op">}</span>;</span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="op">}</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a>std<span class="op">::</span>string x<span class="op">[</span><span class="dv">2</span><span class="op">]</span> <span class="op">=</span> f<span class="op">()</span>; <span class="co">// only one constructor call per element</span></span></code></pre></div></td>
+</tr>
+</tbody>
+</table>
+<h2 id="pseudo-destructors"><span class="header-section-number">3.4</span> Pseudo-destructors<a href="#pseudo-destructors" class="self-link"></a></h2>
+<p>Pseudo-destructors are defined for array types; elements are destroyed in reverse subscript order.</p>
+<table>
+<thead>
+<tr class="header">
+<th><div style="text-align:center">
+<strong>C++20</strong>
+</div></th>
+<th><div style="text-align:center">
+<strong>Proposed</strong>
+</div></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><div class="sourceCode" id="cb13"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">using</span> T <span class="op">=</span> std<span class="op">::</span>string<span class="op">[</span><span class="dv">2</span><span class="op">]</span>;</span>
+<span id="cb13-2"><a href="#cb13-2"></a>T x <span class="op">=</span> <span class="op">{</span> <span class="st">&quot;foo&quot;</span>, <span class="st">&quot;bar&quot;</span> <span class="op">}</span>;</span>
+<span id="cb13-3"><a href="#cb13-3"></a>x<span class="op">.~</span>T<span class="op">()</span>; <span class="co">// ill-formed</span></span></code></pre></div></td>
+<td><div class="sourceCode" id="cb14"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">using</span> T <span class="op">=</span> std<span class="op">::</span>string<span class="op">[</span><span class="dv">2</span><span class="op">]</span>;</span>
+<span id="cb14-2"><a href="#cb14-2"></a>T x <span class="op">=</span> <span class="op">{</span> <span class="st">&quot;foo&quot;</span>, <span class="st">&quot;bar&quot;</span> <span class="op">}</span>;</span>
+<span id="cb14-3"><a href="#cb14-3"></a>x<span class="op">.~</span>T<span class="op">()</span>; <span class="co">// two calls to string destructor</span></span></code></pre></div></td>
+</tr>
+</tbody>
+</table>
+<h2 id="placeholder-type-deduction"><span class="header-section-number">3.5</span> Placeholder type deduction<a href="#placeholder-type-deduction" class="self-link"></a></h2>
+<p>The placeholder type <code>auto</code> is permitted as the element type of an array; the type is deduced from the initializer.</p>
+<table>
+<thead>
+<tr class="header">
+<th><div style="text-align:center">
+<strong>C++20</strong>
+</div></th>
+<th><div style="text-align:center">
+<strong>Proposed</strong>
+</div></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><div class="sourceCode" id="cb15"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb15-1"><a href="#cb15-1"></a><span class="dt">int</span> x<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span> <span class="dv">42</span>, <span class="dv">0</span> <span class="op">}</span>;</span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="kw">auto</span> y<span class="op">[]</span> <span class="op">=</span> x; <span class="co">// ill-formed</span></span></code></pre></div></td>
+<td><div class="sourceCode" id="cb16"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb16-1"><a href="#cb16-1"></a><span class="dt">int</span> x<span class="op">[]</span> <span class="op">=</span> <span class="op">{</span> <span class="dv">42</span>, <span class="dv">0</span> <span class="op">}</span>;</span>
+<span id="cb16-2"><a href="#cb16-2"></a><span class="kw">auto</span> y<span class="op">[]</span> <span class="op">=</span> x; <span class="co">// placeholder is int</span></span></code></pre></div></td>
+</tr>
+</tbody>
+</table>
+<h2 id="impact"><span class="header-section-number">3.6</span> Impact<a href="#impact" class="self-link"></a></h2>
+<p>Such initialization and assignment could simplify the implementation of container types such as <code>std::vector</code>, which reduces the likelihood of programming errors.</p>
+<table>
+<thead>
+<tr class="header">
+<th><div style="text-align:center">
+<strong>C++20</strong>
+</div></th>
+<th><div style="text-align:center">
+<strong>Proposed</strong>
+</div></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><div class="sourceCode" id="cb17"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">template</span><span class="op">&lt;</span><span class="dt">size_t</span> N<span class="op">&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="kw">class</span> T</span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="op">{</span></span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="kw">public</span><span class="op">:</span></span>
+<span id="cb17-5"><a href="#cb17-5"></a>    T <span class="op">&amp;</span> <span class="kw">operator</span><span class="op">=(</span>T <span class="kw">const</span> <span class="op">&amp;</span> other<span class="op">)</span></span>
+<span id="cb17-6"><a href="#cb17-6"></a>    <span class="op">{</span></span>
+<span id="cb17-7"><a href="#cb17-7"></a>        <span class="cf">for</span><span class="op">(</span><span class="dt">int</span> i <span class="op">=</span> <span class="dv">0</span>; i <span class="op">&lt;</span> N; i<span class="op">++)</span> <span class="co">// bug-prone</span></span>
+<span id="cb17-8"><a href="#cb17-8"></a>        <span class="op">{</span></span>
+<span id="cb17-9"><a href="#cb17-9"></a>            samples<span class="op">[</span>i<span class="op">]</span> <span class="op">=</span> other<span class="op">.</span>samples<span class="op">[</span>i<span class="op">]</span>;</span>
+<span id="cb17-10"><a href="#cb17-10"></a>        <span class="op">}</span></span>
+<span id="cb17-11"><a href="#cb17-11"></a>    <span class="op">}</span></span>
+<span id="cb17-12"><a href="#cb17-12"></a><span class="kw">private</span><span class="op">:</span></span>
+<span id="cb17-13"><a href="#cb17-13"></a>    <span class="dt">int</span> samples<span class="op">[</span>N<span class="op">]</span>;</span>
+<span id="cb17-14"><a href="#cb17-14"></a><span class="op">}</span>;</span></code></pre></div></td>
+<td><div class="sourceCode" id="cb18"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">template</span><span class="op">&lt;</span><span class="dt">size_t</span> N<span class="op">&gt;</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="kw">class</span> T</span>
+<span id="cb18-3"><a href="#cb18-3"></a><span class="op">{</span></span>
+<span id="cb18-4"><a href="#cb18-4"></a><span class="kw">public</span><span class="op">:</span></span>
+<span id="cb18-5"><a href="#cb18-5"></a>    T <span class="op">&amp;</span> <span class="kw">operator</span><span class="op">=(</span>T <span class="kw">const</span> <span class="op">&amp;</span> other<span class="op">)</span></span>
+<span id="cb18-6"><a href="#cb18-6"></a>    <span class="op">{</span></span>
+<span id="cb18-7"><a href="#cb18-7"></a>        samples <span class="op">=</span> other<span class="op">.</span>samples; <span class="co">// less bug-prone</span></span>
+<span id="cb18-8"><a href="#cb18-8"></a>    <span class="op">}</span></span>
+<span id="cb18-9"><a href="#cb18-9"></a><span class="kw">private</span><span class="op">:</span></span>
+<span id="cb18-10"><a href="#cb18-10"></a>    <span class="dt">int</span> samples<span class="op">[</span>N<span class="op">]</span>;</span>
+<span id="cb18-11"><a href="#cb18-11"></a><span class="op">}</span>;</span></code></pre></div></td>
+</tr>
+</tbody>
+</table>
+<p>We believe that providing this similarity by defining initialization and assignment from an array does not sacrifice any backward compatibility with the C language. The related semantics are not currently valid in any C or C++ program.</p>
+<table>
+<thead>
+<tr class="header">
+<th><div style="text-align:center">
+<strong>C++20</strong>
+</div></th>
+<th><div style="text-align:center">
+<strong>Proposed</strong>
+</div></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><div class="sourceCode" id="cb19"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">using</span> T <span class="op">=</span> U<span class="op">[</span>N<span class="op">]</span>;</span>
+<span id="cb19-2"><a href="#cb19-2"></a>T x;</span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="co">// all ill-formed</span></span>
+<span id="cb19-4"><a href="#cb19-4"></a>T y0<span class="op">{</span> x <span class="op">}</span>;</span>
+<span id="cb19-5"><a href="#cb19-5"></a>y0 <span class="op">=</span> x;</span>
+<span id="cb19-6"><a href="#cb19-6"></a><span class="op">[&amp;]()</span> <span class="op">-&gt;</span> T <span class="op">{</span> <span class="cf">return</span> x; <span class="op">}()</span>;</span>
+<span id="cb19-7"><a href="#cb19-7"></a><span class="kw">auto</span> y1<span class="op">[]</span> <span class="op">=</span> std<span class="op">::</span>move<span class="op">(</span>x<span class="op">)</span>;</span>
+<span id="cb19-8"><a href="#cb19-8"></a>x<span class="op">.~</span>T<span class="op">()</span>;</span></code></pre></div></td>
+<td><div class="sourceCode" id="cb20"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">using</span> T <span class="op">=</span> U<span class="op">[</span>N<span class="op">]</span>;</span>
+<span id="cb20-2"><a href="#cb20-2"></a>T x;</span>
+<span id="cb20-3"><a href="#cb20-3"></a><span class="co">// all well-formed</span></span>
+<span id="cb20-4"><a href="#cb20-4"></a>T y0<span class="op">{</span> x <span class="op">}</span>;</span>
+<span id="cb20-5"><a href="#cb20-5"></a>y0 <span class="op">=</span> x;</span>
+<span id="cb20-6"><a href="#cb20-6"></a><span class="op">[&amp;]()</span> <span class="op">-&gt;</span> T <span class="op">{</span> <span class="cf">return</span> x; <span class="op">}()</span>;</span>
+<span id="cb20-7"><a href="#cb20-7"></a><span class="kw">auto</span> y1<span class="op">[]</span> <span class="op">=</span> std<span class="op">::</span>move<span class="op">(</span>x<span class="op">)</span>;</span>
+<span id="cb20-8"><a href="#cb20-8"></a>x<span class="op">.~</span>T<span class="op">()</span>;</span></code></pre></div></td>
+</tr>
+</tbody>
+</table>
+<p>Some C++ programs may have their meaning changed. For example, the value defined by <code>std::is_assignable</code> will change for some specializations.</p>
+<table>
+<thead>
+<tr class="header">
+<th><div style="text-align:center">
+<strong>C++20</strong>
+</div></th>
+<th><div style="text-align:center">
+<strong>Proposed</strong>
+</div></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><div class="sourceCode" id="cb21"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw">static_assert</span><span class="op">(!</span>std<span class="op">::</span>is_assignable_v<span class="op">&lt;</span>T<span class="op">(&amp;)[</span>N<span class="op">]</span>, T<span class="op">[</span>N<span class="op">]&gt;)</span>;</span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="kw">static_assert</span><span class="op">(!</span>std<span class="op">::</span>is_assignable_v<span class="op">&lt;</span>T<span class="op">(&amp;)[</span>N<span class="op">]</span>, T<span class="op">(&amp;)[</span>N<span class="op">]&gt;)</span>;</span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="kw">static_assert</span><span class="op">(!</span>std<span class="op">::</span>is_assignable_v<span class="op">&lt;</span>T<span class="op">(&amp;)[</span>N<span class="op">]</span>, T<span class="op">(&amp;&amp;)[</span>N<span class="op">]&gt;)</span>;</span></code></pre></div></td>
+<td><div class="sourceCode" id="cb22"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb22-1"><a href="#cb22-1"></a><span class="kw">static_assert</span><span class="op">(</span>std<span class="op">::</span>is_assignable_v<span class="op">&lt;</span>T<span class="op">(&amp;)[</span>N<span class="op">]</span>, T<span class="op">[</span>N<span class="op">]&gt;)</span>;</span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="kw">static_assert</span><span class="op">(</span>std<span class="op">::</span>is_assignable_v<span class="op">&lt;</span>T<span class="op">(&amp;)[</span>N<span class="op">]</span>, T<span class="op">(&amp;)[</span>N<span class="op">]&gt;)</span>;</span>
+<span id="cb22-3"><a href="#cb22-3"></a><span class="kw">static_assert</span><span class="op">(</span>std<span class="op">::</span>is_assignable_v<span class="op">&lt;</span>T<span class="op">(&amp;)[</span>N<span class="op">]</span>, T<span class="op">(&amp;&amp;)[</span>N<span class="op">]&gt;)</span>;</span></code></pre></div></td>
+</tr>
+</tbody>
+</table>
+<h1 id="design-choices"><span class="header-section-number">4</span> Design choices<a href="#design-choices" class="self-link"></a></h1>
+<h2 id="assignment-and-initialization"><span class="header-section-number">4.1</span> Assignment and initialization<a href="#assignment-and-initialization" class="self-link"></a></h2>
+<p>For both assignment and initialization, the types of the arrays must match exactly, save for cv-qualification. For assignment, this is done to ensure that when the assignment of an array is called for, it will always assign exactly the number of elements contained within the array, to avoid surprising the user through not assigning every element. In the case of initialization, the same restriction exists for similar reasons, as to not leave elements that are value or default-initialized. Additionally, each element of the array is assigned or initialized as if by a subscript expression to carry the value category of the array expression to that of each element during initialization, resulting in the appropriate copy/move constructors being called.</p>
+<h2 id="placeholder-type-deduction-1"><span class="header-section-number">4.2</span> Placeholder type deduction<a href="#placeholder-type-deduction-1" class="self-link"></a></h2>
+<p>The restriction of the placeholder type <code>auto</code> being prohibited as the element type of an array is removed. This is to preserve backwards compatibility by not changing the existing behavior of declarations using <code>auto</code> with an initializer of array type, and instead introducing new syntax to facilitate the deduction of the arrays element type without the array-to-pointer conversion that usually occurs. The deduction process does not deduce the bounds, and instead they are calculated from the initializer separately as specified in <a href="#deducing-arrays-with-auto">[dcl.array] p7</a>, therefore code such as this:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode cpp"><code class="sourceCode cpp"><span id="cb23-1"><a href="#cb23-1"></a><span class="dt">int</span> a<span class="op">[</span><span class="dv">4</span><span class="op">]</span>;</span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="dt">int</span> <span class="op">(&amp;</span>b<span class="op">)[]</span> <span class="op">=</span> a; <span class="co">// ill-formed</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="kw">auto</span> <span class="op">(&amp;</span>c<span class="op">)[]</span> <span class="op">=</span> a; <span class="co">// ill-formed</span></span></code></pre></div>
+<p>does not become well-formed, as the accompanying reference binding without the placeholder is not well-formed either. Normal deduction using a reference to the placeholder type <code>auto</code> will be unchanged. Placeholders for a deduced class type and <code>decltype(auto)</code> are not permitted as an arrays element type, and remain unchanged.</p>
+<h2 id="pseudo-destructors-1"><span class="header-section-number">4.3</span> Pseudo-destructors<a href="#pseudo-destructors-1" class="self-link"></a></h2>
+<p>Currently, pseudo-destructors have no effect, but <span class="citation" data-cites="P0593R5">[<a href="#ref-P0593R5" role="doc-biblioref">P0593R5</a>]</span> will change them so that they end the lifetime of the object they are called upon. This should also be permitted for array objects, and have the effect of destroying the object, as specified by <a href="#allow-pseudo-destructor-calls-for-arrays">[dcl.init] p21</a>. This would destroy the elements of the array in reverse order, and then the array itself.</p>
+<h1 id="wording"><span class="header-section-number">5</span> Wording<a href="#wording" class="self-link"></a></h1>
+<p>All wording is relative to <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/n4835.pdf">N4835</a> except for the changes under <a href="#allow-pseudo-destructor-calls-for-arrays">5.3</a> which are relative to the proposed wording of <span class="citation" data-cites="P0593R5">[<a href="#ref-P0593R5" role="doc-biblioref">P0593R5</a>]</span>.</p>
+<h2 id="allow-array-assignment"><span class="header-section-number">5.1</span> Allow array assignment<a href="#allow-array-assignment" class="self-link"></a></h2>
+<p>Changes to [expr.ass] p2</p>
+<blockquote>
+<p><span class="marginalizedparent"><a class="marginalized">2</a></span> In simple assignment <span class="rm" style="color: #bf0303"><del>(=)</del></span><span class="add" style="color: #006e28"><ins>of the form <span><code>E1 = E2</code></span>, when the left operand is not of array type,</ins></span> the object referred to by the left operand is modified by replacing its value with the result of the right operand. <span class="add" style="color: #006e28"><ins>If the left operand is of type “array of <em>N</em> <span><code>T</code></span>”, the right operand shall be of the same type (ignoring cv-qualification) and the effect is identical to performing <span><code>E1[</code></span><em>i</em><span><code>] = E2[</code></span><em>i</em><span><code>]</code></span> for each <span><code>0 ≤</code></span> <em>i</em> <span><code>&lt;</code></span> <em>N</em>.</ins></span></p>
+</blockquote>
+
+<h2 id="allow-array-initialization"><span class="header-section-number">5.2</span> Allow array initialization<a href="#allow-array-initialization" class="self-link"></a></h2>
+<p>Changes to [dcl.init] p17 sub 5</p>
+<div class="add" style="color: #006e28">
+
+<blockquote>
+<p><span class="marginalizedparent"><a class="marginalized">(17.5)</a></span> Otherwise, if the destination type is an array:</p>
+</blockquote>
+<blockquote>
+<ul>
+<li><span class="marginalizedparent"><a class="marginalized">(17.5.1)</a></span> If the source type is “array of <em>M</em> <em>cv1</em> <code>T</code>”, and the destination type is “array of <em>N</em> <em>cv2</em> <code>U</code>” or “array of unknown bound of <em>cv2</em> <code>T</code>”, <em>M</em> shall be <em>N</em> and <code>T</code> shall be <code>U</code>. Then, if the initializer expression is a prvalue, the initializer expression is used to initialize the destination object. Otherwise, each array element <em>x</em><code>ᵢ</code> is copy-initialized with the expression <code>e[</code><em>i</em><code>]</code> for <code>0 ≤</code> <em>i</em> <code>&lt;</code> <em>N</em> where <code>e</code> is the initializer expression.</li>
+</ul>
+</blockquote>
+
+</div>
+<blockquote>
+<ul>
+<li><span class="marginalizedparent"><a class="marginalized">(17.5.2)</a></span> Otherwise, <span class="rm" style="color: #bf0303"><del>if the destination type is an array, the object is initialized as follows.</del></span> let <em>x</em><code>₁</code><em>, …, x</em><code>ₖ</code> be the elements of the <em>expression-list</em>. <span class="rm" style="color: #bf0303"><del>If the destination type is an array of unknown bound, it is defined as having <em>k</em> elements.</del></span> […]</li>
+</ul>
+</blockquote>
+<p>Changes to [dcl.init.list] p3 sub 2</p>
+<blockquote>
+<p><span class="marginalizedparent"><a class="marginalized">(3.2)</a></span> If <code>T</code> is an aggregate <span class="rm" style="color: #bf0303"><del>class</del></span> and the initializer list has a single element of type <em>cv</em> <code>U</code>, where <code>U</code> is <code>T</code><span class="add" style="color: #006e28"><ins>,</ins></span> or<span class="add" style="color: #006e28"><ins>if <span><code>T</code></span> is a class type,</ins></span> a class derived from <code>T</code>, the object is initialized […]</p>
+</blockquote>
+<h2 id="allow-pseudo-destructor-calls-for-arrays"><span class="header-section-number">5.3</span> Allow pseudo-destructor calls for arrays<a href="#allow-pseudo-destructor-calls-for-arrays" class="self-link"></a></h2>
+<p>This wording is relative to that of the changes proposed by <span class="citation" data-cites="P0593R5">[<a href="#ref-P0593R5" role="doc-biblioref">P0593R5</a>]</span></p>
+<p>Changes to [expr.prim.id.dtor] p2</p>
+<blockquote>
+<p><span class="marginalizedparent"><a class="marginalized">2</a></span> If the <em>id-expression</em> names a pseudo-destructor, <code>T</code> shall be a scalar <span class="add" style="color: #006e28"><ins>or array</ins></span> type and the <em>id-expression</em> shall appear as the right operand of a class member access […]</p>
+</blockquote>
+<p>Changes to [expr.ref] p3</p>
+<blockquote>
+<p><span class="marginalizedparent"><a class="marginalized">3</a></span> […] If the object expression is of scalar <span class="add" style="color: #006e28"><ins>or array</ins></span> type, <code>E2</code> shall name the pseudo-destructor of that same type (ignoring cv-qualifications) and <code>E1.E2</code> is an lvalue […]</p>
+</blockquote>
+<p>Changes to [expr.call] p5</p>
+<blockquote>
+<p><span class="marginalizedparent"><a class="marginalized">5</a></span> […] If the postfix-expression names a pseudo-destructor, the postfix-expression must be a possibly-parenthesized class member access, and the function call destroys the object <span class="rm" style="color: #bf0303"><del>of scalar type</del></span> denoted by the object expression of the class member access.</p>
+</blockquote>
+<p>Changes to [dcl.init] p21</p>
+<blockquote>
+<p><span class="marginalizedparent"><a class="marginalized">21</a></span> […] Destroying an array destroys each element in reverse subscript order<span class="add" style="color: #006e28"><ins>, and then ends the lifetime of the array object</ins></span>.</p>
+</blockquote>
+<h2 id="allow-returning-arrays"><span class="header-section-number">5.4</span> Allow returning arrays<a href="#allow-returning-arrays" class="self-link"></a></h2>
+<p>Changes to [dcl.fct] p11</p>
+<blockquote>
+<p><span class="marginalizedparent"><a class="marginalized">11</a></span> Functions shall not have a return type of <span class="add" style="color: #006e28"><ins>function</ins></span> type <span class="rm" style="color: #bf0303"><del>array or function</del></span>, although they may have a return type of type pointer or reference to <span class="rm" style="color: #bf0303"><del>such things</del></span><span class="add" style="color: #006e28"><ins>function</ins></span>. There shall be no arrays of functions, although there can be arrays of pointers to functions.</p>
+</blockquote>
+<h2 id="deducing-arrays-with-auto"><span class="header-section-number">5.5</span> Deducing arrays with <code>auto</code><a href="#deducing-arrays-with-auto" class="self-link"></a></h2>
+<p>Changes to [dcl.array] p4</p>
+<blockquote>
+<p><span class="marginalizedparent"><a class="marginalized">4</a></span> <code>U</code> is called the array <em>element type</em>; this type shall not be a placeholder type <span class="add" style="color: #006e28"><ins>of the form <em>type-constraint</em><span><code>ₒₚₜ</code></span> <span><code>decltype(auto)</code></span></ins></span>, a reference type, a function type, an array of unknown bound, or <em>cv</em> <code>void</code>.</p>
+</blockquote>
+
+<p>Changes to [dcl.type.auto.deduct] p4</p>
+<blockquote>
+<p><span class="marginalizedparent"><a class="marginalized">4</a></span> […] Deduce a value for <code>U</code> using the rules of template argument deduction from a function call, where <code>P</code> is a function template parameter type and the corresponding argument is <code>e</code><span class="add" style="color: #006e28"><ins>, except that if <span><code>P</code></span> is an array type, <span><code>P&amp;</code></span> is used in place of <span><code>P</code></span> in the synthesized function template</ins></span>. If the deduction fails, the declaration is ill-formed. Otherwise, <code>T′</code> is obtained by substituting the deduced <code>U</code> into <code>P</code>.</p>
+</blockquote>
+<p>Changes to [dcl.array] p7</p>
+<blockquote>
+<p><span class="marginalizedparent"><a class="marginalized">7</a></span> […] In these cases, the array bound <span class="add" style="color: #006e28"><ins><em>N</em></ins></span> is calculated from the <span class="rm" style="color: #bf0303"><del>number of initial elements (say, <em>N</em>) supplied, and the type of the array is “array of <em>N</em> <span><code>U</code></span>”.</del></span><span class="add" style="color: #006e28"><ins>initializer as follows:</ins></span></p>
+</blockquote>
+<div class="add" style="color: #006e28">
+
+<blockquote>
+<ul>
+<li><span class="marginalizedparent"><a class="marginalized">(7.1)</a></span> if the initializer expression is of type “array of <em>M</em> <code>T</code>” or is an initializer list with one element of type “array of <em>M</em> <code>T</code>”, then <em>N</em> is <em>M</em></li>
+<li><span class="marginalizedparent"><a class="marginalized">(7.2)</a></span> otherwise, <em>N</em> is the number of <em>initializer-clause</em>s in the <em>braced-init-list</em> or <em>expression-list</em>.</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>The type of the array is “array of <em>N</em> <code>U</code>”.</p>
+</blockquote>
+
+</div>
+<p>Changes to [dcl.init.aggr] p9</p>
+<blockquote>
+<p><span class="marginalizedparent"><a class="marginalized">9</a></span> <span class="rm" style="color: #bf0303"><del>An array of unknown bound initialized with a brace-enclosed initializer-list containing <em>n</em> <em>initializer-clause</em>s is defined as having <em>n</em> elements.</del></span></p>
+</blockquote>
+<h2 id="copy-elision-for-arrays"><span class="header-section-number">5.6</span> Copy elision for arrays<a href="#copy-elision-for-arrays" class="self-link"></a></h2>
+<p>Changes to [class.copy.elision] p1</p>
+<blockquote>
+<p><span class="marginalizedparent"><a class="marginalized">1</a></span> When certain criteria are met, an implementation is allowed to omit the copy/move construction of a class <span class="add" style="color: #006e28"><ins>object or array of class</ins></span> object<span class="add" style="color: #006e28"><ins>s</ins></span>, even if the constructor selected for the copy/move operation<span class="add" style="color: #006e28"><ins>(s)</ins></span> and/or the destructor for the object <span class="add" style="color: #006e28"><ins>or its elements</ins></span> have side effects. In such cases, the implementation treats the source and target of the omitted copy/move operation<span class="add" style="color: #006e28"><ins>(s)</ins></span> as simply two different ways of referring to the same object. If the first parameter of the selected constructor is an rvalue reference to the object’s type <span class="add" style="color: #006e28"><ins>(or, in the case of an array, its element type)</ins></span>, the destruction of that object occurs when the target would have been destroyed; otherwise, the destruction occurs at the later of the times when the two objects would have been destroyed without the optimization. […]</p>
+</blockquote>
+<blockquote>
+<ul>
+<li><span class="marginalizedparent"><a class="marginalized">(1.1)</a></span> in a <code>return</code> statement in a function with a class <span class="add" style="color: #006e28"><ins>or array</ins></span> return type […] the copy/move operation<span class="add" style="color: #006e28"><ins>(s)</ins></span> can be omitted by constructing the automatic object <span class="add" style="color: #006e28"><ins>or array elements</ins></span> directly into the function call’s return object</li>
+</ul>
+</blockquote>
+<h2 id="wording-cleanup"><span class="header-section-number">5.7</span> Wording cleanup<a href="#wording-cleanup" class="self-link"></a></h2>
+<p>Changes to [temp.deduct] p11 sub 10</p>
+<blockquote>
+<p><span class="marginalizedparent"><a class="marginalized">(11.10)</a></span> Attempting to create a function type in which a parameter has a type of <code>void</code>, or in which the return type is a function type <span class="rm" style="color: #bf0303"><del>or array type</del></span>.</p>
+</blockquote>
+<h1 id="acknowledgements"><span class="header-section-number">6</span> Acknowledgements<a href="#acknowledgements" class="self-link"></a></h1>
+<p>Thanks to Agustín Bergé, Peter Dimov, Vinnie Falco, Will Wray, and all others who discussed this in the CppLang Slack.</p>
+<h1 id="references"><span class="header-section-number">7</span> References<a href="#references" class="self-link"></a></h1>
+
+<div id="refs" role="doc-bibliography">
+<div id="ref-P0593R5">
+<p>[P0593R5] Richard Smith. 2019. Implicit creation of objects for low-level object manipulation. <br />
+<a href="https://wg21.link/p0593r5">https://wg21.link/p0593r5</a></p>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
